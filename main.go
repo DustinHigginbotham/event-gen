@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	eventgen "github.com/DustinHigginbotham/event-gen/pkg"
+	eventgen "github.com/DustinHigginbotham/event-gen/internal"
 )
 
 func main() {

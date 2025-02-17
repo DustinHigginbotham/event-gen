@@ -17,21 +17,24 @@ type App struct {
 	{{- end}}
 }
 
-func NewApp(
-	store Store,
-	queue EventQueue,
-	registry *Registry,
-) *App {
+
+func NewApp() *App {
 	a := &App{
-		store: store,
-		queue: queue,
-		registry: registry,
+		registry: NewRegistry(),
 		quit: make(chan struct{}, 1),
 	}
 
 	a.registerEvents()
 
 	return a
+}
+
+func (a *App) SetStore(store Store) {
+	a.store = store
+}
+
+func (a *App) SetQueue(queue EventQueue) {
+	a.queue = queue
 }
 
 func (a *App) Close() {
