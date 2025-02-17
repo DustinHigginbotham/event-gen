@@ -47,6 +47,7 @@ func Generate() error {
 		g.generateEntity,
 		g.generateService,
 		g.generateDomainEvents,
+		g.generateEventHandlers,
 		g.generateReactors,
 		g.generateEvent,
 		g.generateApp,

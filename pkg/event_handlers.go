@@ -2,12 +2,19 @@ package eventgen
 
 import (
 	"bytes"
+	"context"
 	"fmt"
 	"os"
 	"strings"
 )
 
-func (g *Generator) generateEventHandlers() error {
+func (g *Generator) generateEventHandlers(ctx context.Context) error {
+
+	select {
+	case <-ctx.Done():
+		return fmt.Errorf("generateEventHandlers aborted due to context cancellation")
+	default:
+	}
 
 	type d struct {
 		DomainSchema
