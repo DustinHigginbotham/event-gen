@@ -38,7 +38,7 @@ func parse() (*App, error) {
 		}
 
 		if domain.Name == "" {
-			domain.Name = strings.Title(strings.TrimSuffix(file.Name(), ".yml"))
+			domain.Name = strings.Title(strings.TrimSuffix(strings.TrimSuffix(file.Name(), ".yml"), ".yaml"))
 		}
 
 		for _, event := range domain.Events {
