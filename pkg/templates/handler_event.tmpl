@@ -1,0 +1,17 @@
+{{- if .NewFile }}package {{.Package}}
+
+import (
+    app "{{.ImportPath}}/gen"
+)
+{{- end}}
+type {{.Event.Name}}EventHandler struct {}
+
+func (h *{{.Event.Name}}EventHandler) Handle{{.Event.Name}}(
+    a *app.{{.Entity.Name}},
+    ev app.{{.Event.Name}},
+) error {
+    {{- range .Event.Fields }}
+    a.{{.Name | toExported}} = ev.{{.Name | toExported}}
+    {{- end}}
+    return nil
+}

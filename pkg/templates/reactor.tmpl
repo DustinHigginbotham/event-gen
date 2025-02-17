@@ -1,0 +1,11 @@
+package app
+
+import (
+	"context"
+)
+
+type {{.Entity.Name}}ReactorManager interface {
+{{- range .Reactors}}
+	Handle{{.Name}}(ctx context.Context, app *App, event *{{.ActualEvent}}) 
+{{- end}}
+}

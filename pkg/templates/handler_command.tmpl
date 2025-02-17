@@ -1,0 +1,21 @@
+{{- if .NewFile }}package {{.Package}}
+
+import (
+    "context"
+
+    app "{{.ImportPath}}/gen"
+)
+{{- end}}
+type {{.Command.Name}}CommandHandler struct {}
+
+func (h *{{.Command.Name}}CommandHandler) {{.Command.Name}}(
+    ctx context.Context,
+    a *app.App,
+    cmd *app.{{.Command.Name}},
+) (*app.{{.Command.Emits}}, error) {
+    return &app.{{.Command.Emits}}{
+        {{- range .Emits.Fields }}
+        {{.Name | toExported}}: cmd.{{.Name | toExported}},
+        {{- end}}
+    }, nil
+}
