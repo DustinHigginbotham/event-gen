@@ -90,5 +90,19 @@ events:
         type: string
       - name: last_name
         type: string
+
+reactors:
+  - name: WelcomeEmailReactor
+    description: Sends a welcome email to the user when created
+    type: local
+    reactsTo: user.created
+
+projections:
+  - name: UserProjection
+    description: Creates a user projection
+    type: local
+    reactsTo:
+      - user.created
+      - user.updated
 ```
 
