@@ -124,3 +124,6 @@ projections:
       - user.updated
 ```
 
+## Example
+
+An example project can be [found here](https://github.com/DustinHigginbotham/event-gen-user-example).
