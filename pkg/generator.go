@@ -5,7 +5,8 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"sync"
+
+	"golang.org/x/sync/errgroup"
 )
 
 type Field struct {
@@ -17,17 +18,17 @@ type Field struct {
 
 type Generator struct {
 	app *App
-
-	errorChan chan error
 }
 
 func New() *Generator {
-	return &Generator{
-		errorChan: make(chan error),
-	}
+	return &Generator{}
 }
 
 func Generate() error {
+
+	if err := createDirIfNotExists("./gen/"); err != nil {
+		return err
+	}
 
 	app, err := parse()
 	if err != nil {
@@ -38,76 +39,26 @@ func Generate() error {
 	g.app = app
 
 	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
 
-	var wg sync.WaitGroup
-	errChan := make(chan error, 1)
-	done := make(chan struct{})
-	var retErr error
+	grp, ctx := errgroup.WithContext(ctx)
 
-	// Handle any errors from goroutines
-	go func() {
-		select {
-		case err := <-errChan:
-			retErr = err
-			cancel()
-		case <-done:
-		}
-	}()
+	generators := []func(ctx context.Context) error{
+		g.generateEntity,
+		g.generateService,
+		g.generateDomainEvents,
+		g.generateReactors,
+		g.generateEvent,
+		g.generateApp,
+		g.generateHandlers,
+	}
 
-	wg.Add(7)
-	go func() {
-		defer wg.Done()
-		if err := g.generateEntity(ctx); err != nil {
-			errChan <- err
-		}
-	}()
+	for _, generator := range generators {
+		grp.Go(func() error { return generator(ctx) })
+	}
 
-	go func() {
-		defer wg.Done()
-		if err := g.generateService(ctx); err != nil {
-			errChan <- err
-		}
-	}()
-
-	go func() {
-		defer wg.Done()
-		if err := g.generateDomainEvents(ctx); err != nil {
-			errChan <- err
-		}
-	}()
-
-	go func() {
-		defer wg.Done()
-		if err := g.generateReactors(ctx); err != nil {
-			errChan <- err
-		}
-	}()
-
-	go func() {
-		defer wg.Done()
-		if err := g.generateEvent(ctx); err != nil {
-			errChan <- err
-		}
-	}()
-
-	go func() {
-		defer wg.Done()
-		if err := g.generateApp(ctx); err != nil {
-			errChan <- err
-		}
-	}()
-
-	go func() {
-		defer wg.Done()
-		if err := g.generateHandlers(ctx); err != nil {
-			errChan <- err
-		}
-	}()
-
-	wg.Wait()
-
-	if retErr != nil {
-		return retErr
+	if err := grp.Wait(); err != nil {
+		return err
 	}
 
 	return nil

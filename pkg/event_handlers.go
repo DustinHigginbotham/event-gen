@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-func (g *Generator) generateEventHandlers() {
+func (g *Generator) generateEventHandlers() error {
 
 	type d struct {
 		DomainSchema
@@ -53,14 +53,12 @@ func (g *Generator) generateEventHandlers() {
 				ImportPath:   g.app.Package,
 				NewFile:      !fileExists,
 			}); err != nil {
-				g.errorChan <- err
-				return
+				return err
 			}
 
 			fileBytes, err := formatAndImports(buf.Bytes())
 			if err != nil {
-				g.errorChan <- err
-				return
+				return err
 			}
 
 			createDirIfNotExists(fileName)
@@ -68,21 +66,21 @@ func (g *Generator) generateEventHandlers() {
 			if fileExists {
 				f, err := os.OpenFile(fileName, os.O_APPEND|os.O_WRONLY, 0644)
 				if err != nil {
-					g.errorChan <- err
+					return err
 				}
 				defer f.Close()
 				if _, err := f.Write(fileBytes); err != nil {
-					g.errorChan <- err
+					return err
 				}
 			} else {
 				err = os.WriteFile(fileName, fileBytes, 0644)
 			}
 
 			if err != nil {
-				g.errorChan <- err
-				return
+				return err
 			}
 		}
 	}
-	// println(buf.String())
+
+	return nil
 }
