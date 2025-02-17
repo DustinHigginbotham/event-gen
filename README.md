@@ -23,6 +23,8 @@ Example:
 `event-gen/users.yaml`
 
 ```yaml
+
+# Creates a User entity
 entity:
   name: User
   description: A user
@@ -36,7 +38,10 @@ entity:
     - name: email
       type: string
 
+# Sets up a list of commands for the entity
 commands:
+
+  # A command to create a new user
   - name: CreateUser
     description: Create a new user
     emits: UserCreated
@@ -51,6 +56,7 @@ commands:
       - name: email
         type: string
 
+  # A command to update a user
   - name: UpdateUser
     description: Updates the name of the user.
     emits: UserUpdated
@@ -63,10 +69,13 @@ commands:
       - name: last_name
         type: string
 
+# Sets up a list of events for the entity (spawned from the commands)
 events:
+
+  # Fired from the CreateUser command
   - name: UserCreated
     type: user.created
-    state: true
+    state: true # Changes the state of the entity
     handler: domains/user/handlers:user
     description: A user has been created
     fields:
@@ -78,6 +87,8 @@ events:
         type: string
       - name: email
         type: string
+
+  # Fired from the UpdateUser command
   - name: UserUpdated
     type: user.updated
     handler: domains/user/handlers:user
@@ -91,13 +102,20 @@ events:
       - name: last_name
         type: string
 
+# Sets up a list of reactors for the entity
 reactors:
+
+  # A reactor to send a welcome email to the user when created
   - name: WelcomeEmailReactor
     description: Sends a welcome email to the user when created
     type: local
     reactsTo: user.created
 
+# Sets up a list of projections for the entity
+# This is used to keep a user projection up to date
 projections:
+
+  # A projection to create a user projection
   - name: UserProjection
     description: Creates a user projection
     type: local
