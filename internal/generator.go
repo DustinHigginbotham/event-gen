@@ -44,12 +44,12 @@ func Generate() error {
 	grp, ctx := errgroup.WithContext(ctx)
 
 	generators := []func(ctx context.Context) error{
-		g.generateEntity,
+		g.generateEntities,
 		g.generateService,
 		g.generateDomainEvents,
 		g.generateEventHandlers,
 		g.generateReactors,
-		g.generateEvent,
+		g.generateEventSource,
 		g.generateApp,
 		g.generateHandlers,
 	}

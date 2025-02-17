@@ -8,11 +8,12 @@ import (
 	"strings"
 )
 
-func (g *Generator) generateDomainEvents(ctx context.Context) error {
+// generateEntities generates the entities for the given domain.
+func (g *Generator) generateEntities(ctx context.Context) error {
 
 	select {
 	case <-ctx.Done():
-		return fmt.Errorf("generateDomainEvents aborted due to context cancellation")
+		return fmt.Errorf("generateEntity aborted due to context cancellation")
 	default:
 	}
 
@@ -20,10 +21,9 @@ func (g *Generator) generateDomainEvents(ctx context.Context) error {
 		DomainSchema
 		Package string
 	}
-
 	for _, domain := range g.app.Domains {
 
-		t := loadTemplate("domain.event")
+		t := loadTemplate("entity")
 		var buf bytes.Buffer
 		if err := t.Execute(&buf, d{Package: g.app.Package, DomainSchema: domain}); err != nil {
 			return err
@@ -33,7 +33,8 @@ func (g *Generator) generateDomainEvents(ctx context.Context) error {
 		if err != nil {
 			return err
 		}
-		err = os.WriteFile(fmt.Sprintf("gen/%s.events.go", strings.ToLower(domain.Name)), fileBytes, 0644)
+
+		err = os.WriteFile(fmt.Sprintf("gen/%s.entity.go", strings.ToLower(domain.Name)), fileBytes, 0644)
 		if err != nil {
 			return err
 		}

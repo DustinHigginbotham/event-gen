@@ -8,44 +8,39 @@ import (
 	"strings"
 )
 
-func (g *Generator) generateHandlers(ctx context.Context) error {
+// generateEventHandlers generates the event handlers for the given domain.
+func (g *Generator) generateEventHandlers(ctx context.Context) error {
 
 	select {
 	case <-ctx.Done():
-		return fmt.Errorf("generateHandlers aborted due to context cancellation")
+		return fmt.Errorf("generateEventHandlers aborted due to context cancellation")
 	default:
 	}
 
 	type d struct {
 		DomainSchema
-		Command    Command
+		Event      Event
+		Entity     Entity
 		Package    string
-		Emits      Event
 		NewFile    bool
 		ImportPath string
 	}
+
 	for _, domain := range g.app.Domains {
 
-		for _, command := range domain.Commands {
+		for _, ev := range domain.Events {
 
-			if command.Handler == "" {
+			if ev.Handler == "" {
 				continue
 			}
 
-			handlerSplits := strings.Split(command.Handler, ":")
-
-			var emits Event
-			for _, event := range domain.Events {
-				if event.Name == command.Emits {
-					emits = event
-				}
-			}
+			handlerSplits := strings.Split(ev.Handler, ":")
 
 			fileExists := false
 
 			fileName := fmt.Sprintf("%s.go", strings.ToLower(handlerSplits[0]))
 
-			funcName := command.Name
+			funcName := fmt.Sprintf("Handle%s", strings.Title(ev.Name))
 			if _, err := os.Stat(fileName); err == nil {
 				fileExists = true
 
@@ -56,13 +51,13 @@ func (g *Generator) generateHandlers(ctx context.Context) error {
 
 			}
 
-			t := loadTemplate("handler_command")
+			t := loadTemplate("handler_event")
 			var buf bytes.Buffer
 			if err := t.Execute(&buf, d{
 				Package:      handlerSplits[1],
-				Command:      command,
+				Event:        ev,
+				Entity:       domain.Entity,
 				DomainSchema: domain,
-				Emits:        emits,
 				ImportPath:   g.app.Package,
 				NewFile:      !fileExists,
 			}); err != nil {

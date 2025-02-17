@@ -8,21 +8,7 @@ import (
 	"strings"
 )
 
-type ReactorSchema struct {
-	Reactors []Reactor `yaml:"reactors"`
-}
-
-type Reactor struct {
-	Name        string `yaml:"name"`
-	Description string `yaml:"description"`
-	ReactsTo    string `yaml:"reactsTo"`
-	Emits       string `yaml:"emits"`
-	Type        string `yaml:"type"`
-	Handler     string `yaml:"handler"`
-
-	ActualEvent string `yaml:"-"`
-}
-
+// generateReactors generates the reactors for the given domain.
 func (g *Generator) generateReactors(ctx context.Context) error {
 
 	select {

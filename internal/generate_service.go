@@ -8,6 +8,8 @@ import (
 	"strings"
 )
 
+// generateService generates the service for the given domain.
+// This is the file that contains all of the command definitions.
 func (g *Generator) generateService(ctx context.Context) error {
 
 	select {

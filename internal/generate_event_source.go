@@ -7,16 +7,10 @@ import (
 	"os"
 )
 
-type Event struct {
-	Name        string  `yaml:"name"`
-	Type        string  `yaml:"type"`
-	Handler     string  `yaml:"handler"`
-	State       bool    `yaml:"state"`
-	Description string  `yaml:"description"`
-	Fields      []Field `yaml:"fields"`
-}
-
-func (g *Generator) generateEvent(ctx context.Context) error {
+// generateEventSource generates the event source file.
+// This is the gen/event_source.go file.
+// This includes the main event logic, which is not specific to any domain.
+func (g *Generator) generateEventSource(ctx context.Context) error {
 
 	select {
 	case <-ctx.Done():

@@ -14,6 +14,77 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
+// App defines the structure of the generated app.
+type App struct {
+	Package  string
+	Domains  []DomainSchema
+	EventMap map[string]string `yaml:"-"`
+}
+
+// DomainSchema defines the structure of a domain.
+type DomainSchema struct {
+	Name        string       `yaml:"name"`
+	Description string       `yaml:"description"`
+	Entity      Entity       `yaml:"entity"`
+	Commands    []Command    `yaml:"commands"`
+	Events      []Event      `yaml:"events"`
+	Reactors    []Reactor    `yaml:"reactors"`
+	Projections []Projection `yaml:"projections"`
+
+	Package string `yaml:"-"`
+}
+
+// Command defines the structure of a command in our yaml file.
+type Command struct {
+	Name        string  `yaml:"name"`
+	Description string  `yaml:"description"`
+	Handler     string  `yaml:"handler"`
+	Emits       string  `yaml:"emits"`
+	Fields      []Field `yaml:"fields"`
+}
+
+// Entity defines the structure of an entity in our yaml file.
+type Entity struct {
+	Name        string  `yaml:"name"`
+	Description string  `yaml:"description"`
+	Fields      []Field `yaml:"fields"`
+}
+
+// Event defines the structure of an event in our yaml file.
+type Event struct {
+	Name        string  `yaml:"name"`
+	Type        string  `yaml:"type"`
+	Handler     string  `yaml:"handler"`
+	State       bool    `yaml:"state"`
+	Description string  `yaml:"description"`
+	Fields      []Field `yaml:"fields"`
+}
+
+// Projection defines the structure of a projection in our yaml file.
+type Projection struct {
+	Name        string   `yaml:"name"`
+	Description string   `yaml:"description"`
+	Type        string   `yaml:"type"`
+	ReactsTo    []string `yaml:"reactsTo"`
+}
+
+// ReactorSchema defines the structure of a reactor in our yaml file.
+type ReactorSchema struct {
+	Reactors []Reactor `yaml:"reactors"`
+}
+
+// Reactor defines the structure of a reactor in our yaml file.
+type Reactor struct {
+	Name        string `yaml:"name"`
+	Description string `yaml:"description"`
+	ReactsTo    string `yaml:"reactsTo"`
+	Emits       string `yaml:"emits"`
+	Type        string `yaml:"type"`
+	Handler     string `yaml:"handler"`
+
+	ActualEvent string `yaml:"-"`
+}
+
 func parse() (*App, error) {
 	var domains []DomainSchema
 

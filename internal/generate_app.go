@@ -7,12 +7,7 @@ import (
 	"os"
 )
 
-type App struct {
-	Package  string
-	Domains  []DomainSchema
-	EventMap map[string]string `yaml:"-"`
-}
-
+// generateApp generates the app.go file.
 func (g *Generator) generateApp(ctx context.Context) error {
 
 	select {
